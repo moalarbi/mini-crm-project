@@ -57,13 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ---- API Calls ----
 async function apiCall(action, data = {}) {
-  const payload = { action, ...data };
+  const payload  = JSON.stringify({ action, ...data });
+  const url      = `${API_URL}?payload=${encodeURIComponent(payload)}`;
 
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify(payload),
-  });
+  const res = await fetch(url, { method: 'GET' });
 
   if (!res.ok) throw new Error(`خطأ في الشبكة: ${res.status}`);
   const json = await res.json();
