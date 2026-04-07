@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة إدارة العملاء | Mini CRM</title>
+  <meta name="description" content="لوحة إدارة العملاء والمشاريع - Mini CRM">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+</head>
+<body>
+
+<!-- ==================== Loading Overlay ==================== -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text">جاري التحميل...</div>
+</div>
+
+<!-- ==================== Toast Container ==================== -->
+<div id="toast-container"></div>
+
+<!-- ==================== Header ==================== -->
+<header class="crm-header">
+  <div class="header-brand">
+    <div class="header-logo">📊</div>
+    <h1 class="header-title">لوحة إدارة العملاء</h1>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost btn-sm" id="btn-refresh">
+      🔄 تحديث
+    </button>
+    <button class="btn btn-primary btn-sm" id="btn-add-project">
+      ➕ مشروع جديد
+    </button>
+  </div>
+</header>
+
+<!-- ==================== Main Content ==================== -->
+<main class="crm-main">
+
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon blue">📁</div>
+      <div class="stat-body">
+        <div class="stat-label">إجمالي المشاريع</div>
+        <div class="stat-value blue" id="stat-projects">0</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">💰</div>
+      <div class="stat-body">
+        <div class="stat-label">إجمالي المحصّل</div>
+        <div class="stat-value green" id="stat-paid">0 ر.س</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon amber">⏳</div>
+      <div class="stat-body">
+        <div class="stat-label">إجمالي المتبقي</div>
+        <div class="stat-value amber" id="stat-remaining">0 ر.س</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon red">🚨</div>
+      <div class="stat-body">
+        <div class="stat-label">مشاريع متأخرة</div>
+        <div class="stat-value red" id="stat-late">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== Form Panel ==================== -->
+  <div class="form-panel collapsed" id="form-panel">
+
+    <div class="form-panel-header" id="form-toggle-btn">
+      <div class="form-panel-title">
+        <span class="icon">📝</span>
+        <span id="form-panel-header-title">➕ إضافة مشروع جديد</span>
+      </div>
+      <span id="form-toggle-icon">▼</span>
+    </div>
+
+    <div class="form-panel-body">
+      <form id="project-form" autocomplete="off">
+
+        <div class="form-grid">
+
+          <!-- العميل -->
+          <div class="form-group">
+            <label class="form-label">
+              اسم العميل <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="field-client-name"
+              placeholder="مثال: أحمد المطيري"
+              required
+            >
+          </div>
+
+          <!-- المشروع -->
+          <div class="form-group">
+            <label class="form-label">
+              اسم المشروع <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="field-project-name"
+              placeholder="مثال: متجر ملابس سلة"
+              required
+            >
+          </div>
+
+          <!-- واتساب -->
+          <div class="form-group">
+            <label class="form-label">رقم واتساب</label>
+            <input
+              type="tel"
+              id="field-whatsapp"
+              placeholder="966501234567"
+              dir="ltr"
+              style="text-align:left"
+            >
+          </div>
+
+          <!-- الخدمة -->
+          <div class="form-group">
+            <label class="form-label">نوع الخدمة</label>
+            <select id="field-service">
+              <option value="">— اختر الخدمة —</option>
+            </select>
+          </div>
+
+          <!-- خدمة مخصصة (تظهر عند اختيار "أخرى") -->
+          <div class="form-group hidden" id="field-service-custom-wrap">
+            <label class="form-label">تفصيل الخدمة</label>
+            <input
+              type="text"
+              id="field-service-custom"
+              placeholder="اكتب اسم الخدمة"
+            >
+          </div>
+
+          <!-- تفاصيل -->
+          <div class="form-group full">
+            <label class="form-label">تفاصيل المشروع</label>
+            <textarea
+              id="field-service-details"
+              placeholder="اكتب تفاصيل العمل المتفق عليه..."
+            ></textarea>
+          </div>
+
+          <!-- رابط الفاتورة -->
+          <div class="form-group half">
+            <label class="form-label">رابط الفاتورة</label>
+            <input
+              type="url"
+              id="field-invoice-link"
+              placeholder="https://..."
+              dir="ltr"
+              style="text-align:left"
+            >
+          </div>
+
+          <!-- موعد التسليم -->
+          <div class="form-group">
+            <label class="form-label">موعد التسليم</label>
+            <input
+              type="date"
+              id="field-delivery-date"
+              dir="ltr"
+              style="text-align:left"
+            >
+          </div>
+
+          <!-- السعر -->
+          <div class="form-group">
+            <label class="form-label">السعر الإجمالي (ر.س)</label>
+            <input
+              type="number"
+              id="field-price"
+              placeholder="0"
+              min="0"
+              step="0.01"
+              dir="ltr"
+              style="text-align:left"
+            >
+          </div>
+
+          <!-- المدفوع -->
+          <div class="form-group">
+            <label class="form-label">المبلغ المدفوع (ر.س)</label>
+            <input
+              type="number"
+              id="field-paid"
+              placeholder="0"
+              min="0"
+              step="0.01"
+              dir="ltr"
+              style="text-align:left"
+            >
+          </div>
+
+          <!-- الحالة -->
+          <div class="form-group">
+            <label class="form-label">حالة المشروع</label>
+            <select id="field-status">
+              <option value="pending">⏳ انتظار</option>
+              <option value="inprogress">🔄 جاري التنفيذ</option>
+              <option value="review">🔍 مراجعة</option>
+              <option value="completed">✅ مكتمل</option>
+              <option value="paused">⏸️ موقوف</option>
+            </select>
+          </div>
+
+          <!-- التقدم -->
+          <div class="form-group full">
+            <label class="form-label">
+              نسبة الإنجاز:
+              <strong id="progress-display" style="color:var(--primary)">0%</strong>
+            </label>
+            <input
+              type="range"
+              id="field-progress"
+              min="0"
+              max="100"
+              step="5"
+              value="0"
+              style="accent-color:var(--primary); cursor:pointer; width:100%; margin-top:4px"
+            >
+          </div>
+
+        </div><!-- /form-grid -->
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="form-submit-btn">
+            💾 حفظ المشروع
+          </button>
+          <button type="button" class="btn btn-ghost" id="form-cancel">
+            إلغاء
+          </button>
+        </div>
+
+      </form>
+    </div><!-- /form-panel-body -->
+  </div><!-- /form-panel -->
+
+  <!-- ==================== Toolbar ==================== -->
+  <div class="toolbar">
+
+    <!-- Search -->
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        class="search-input"
+        id="search-input"
+        placeholder="ابحث باسم العميل أو رقم واتساب..."
+      >
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <button class="filter-chip active" data-filter="all">الكل</button>
+      <button class="filter-chip" data-filter="inprogress">🔄 جاري</button>
+      <button class="filter-chip" data-filter="pending">⏳ انتظار</button>
+      <button class="filter-chip" data-filter="completed">✅ مكتمل</button>
+      <button class="filter-chip" data-filter="late">🚨 متأخر</button>
+      <button class="filter-chip" data-filter="unpaid">💸 غير مدفوع</button>
+    </div>
+
+  </div>
+
+  <!-- ==================== Projects Table ==================== -->
+  <div class="table-wrap">
+
+    <div class="table-header">
+      <div class="table-header-title">
+        📋 المشاريع
+        <span class="table-count" id="table-count">0</span>
+      </div>
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>العميل</th>
+            <th>المشروع</th>
+            <th>واتساب</th>
+            <th>الحالة</th>
+            <th>التقدم</th>
+            <th>الدفع</th>
+            <th>موعد التسليم</th>
+            <th>الفاتورة</th>
+            <th>إجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="projects-tbody">
+          <!-- Rows rendered by JS -->
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /table-wrap -->
+
+</main><!-- /crm-main -->
+
+
+<!-- ==================== Confirm Delete Modal ==================== -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🗑️ تأكيد الحذف</div>
+      <button class="modal-close modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-icon">🗑️</div>
+      <div class="confirm-text">
+        هل أنت متأكد من حذف مشروع
+        <span class="confirm-name" id="confirm-project-name"></span>؟
+        <br><br>
+        <span style="color:var(--red); font-size:13px">⚠️ لا يمكن التراجع عن هذا الإجراء</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger" id="confirm-delete-btn">🗑️ نعم، احذف</button>
+      <button class="btn btn-ghost modal-cancel">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Add Payment Modal ==================== -->
+<div class="modal-overlay" id="payment-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">💰 إضافة دفعة</div>
+      <button class="modal-close modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div style="background:var(--bg-card); border-radius:var(--radius-md); padding:16px; margin-bottom:20px; border:1px solid var(--border);">
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:4px">العميل</div>
+        <div style="font-weight:700; font-size:15px" id="payment-client-name"></div>
+        <div style="font-size:13px; color:var(--text-secondary); margin-top:2px" id="payment-project-name"></div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
+        <div style="background:var(--primary-dim); border-radius:var(--radius-md); padding:12px; border:1px solid rgba(76,175,80,0.2);">
+          <div style="font-size:12px; color:var(--text-muted)">المدفوع حتى الآن</div>
+          <div style="font-weight:700; color:var(--primary); font-size:16px; margin-top:4px" id="payment-current-paid">0</div>
+        </div>
+        <div style="background:var(--amber-dim); border-radius:var(--radius-md); padding:12px; border:1px solid rgba(245,158,11,0.2);">
+          <div style="font-size:12px; color:var(--text-muted)">المتبقي</div>
+          <div style="font-weight:700; color:var(--amber); font-size:16px; margin-top:4px" id="payment-remaining">0</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">مبلغ الدفعة الجديدة (ر.س) <span class="required">*</span></label>
+        <input
+          type="number"
+          id="payment-amount"
+          placeholder="0"
+          min="1"
+          step="0.01"
+          dir="ltr"
+          style="text-align:left; font-size:18px; font-weight:700; padding:14px"
+        >
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" id="payment-save-btn">💰 تأكيد الدفعة</button>
+      <button class="btn btn-ghost modal-cancel">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Scripts ==================== -->
+<script src="app.js"></script>
+
+<!-- Fix service-custom visibility on select change -->
+<script>
+  document.getElementById('field-service').addEventListener('change', function() {
+    const wrap = document.getElementById('field-service-custom-wrap');
+    const input = document.getElementById('field-service-custom');
+    if (this.value === 'أخرى') {
+      wrap.classList.remove('hidden');
+      input.classList.remove('hidden');
+    } else {
+      wrap.classList.add('hidden');
+      input.classList.add('hidden');
+    }
+  });
+</script>
+
+</body>
+</html>
