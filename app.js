@@ -5,7 +5,7 @@
 
 // ---- Configuration ----
 // ⚠️ استبدل هذا الرابط بعد نشر Apps Script
-const API_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwdeNdPYpth7Eloo2cUHoQAPAsZnGwsoz0ZKYCThRn5vRHSMoRgLMCEztcaxOqhl91mNA/exec';
 
 // ---- App State ----
 const state = {
